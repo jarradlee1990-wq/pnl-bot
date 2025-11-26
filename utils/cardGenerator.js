@@ -20,7 +20,10 @@ class CardGenerator {
         const axios = require('axios');
         const sharp = require('sharp');
         
-        const response = await axios.get(urlToLoad, { responseType: 'arraybuffer' });
+        const response = await axios.get(urlToLoad, { 
+            responseType: 'arraybuffer',
+            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36' }
+        });
         let buffer = Buffer.from(response.data);
         
         // Convert to PNG using Sharp to ensure Canvas compatibility (fixes WebP issues)
@@ -103,7 +106,10 @@ class CardGenerator {
     const axios = require('axios');
 
     // 1. Download GIF to buffer
-    const response = await axios.get(backgroundUrl, { responseType: 'arraybuffer' });
+    const response = await axios.get(backgroundUrl, { 
+        responseType: 'arraybuffer',
+        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36' }
+    });
     const buffer = Buffer.from(response.data);
 
     // 2. Extract frames
@@ -309,7 +315,10 @@ class CardGenerator {
             try {
                 const axios = require('axios');
                 const sharp = require('sharp');
-                const response = await axios.get(payload.avatarUrl, { responseType: 'arraybuffer' });
+                const response = await axios.get(payload.avatarUrl, { 
+                    responseType: 'arraybuffer',
+                    headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36' }
+                });
                 let buffer = Buffer.from(response.data);
                 buffer = await sharp(buffer).png().toBuffer();
 

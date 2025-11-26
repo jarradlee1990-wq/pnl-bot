@@ -3,7 +3,10 @@ const fs = require('fs');
 const path = require('path');
 const { Client, GatewayIntentBits, Collection, REST, Routes } = require('discord.js');
 
-if (!process.env.DISCORD_TOKEN || !process.env.CLIENT_ID) {
+const discordToken = process.env.DISCORD_TOKEN || process.env.discord_token;
+const clientId = process.env.CLIENT_ID || process.env.client_id;
+
+if (!discordToken || !clientId) {
   console.log('Current Env Vars:', Object.keys(process.env));
   throw new Error('Missing DISCORD_TOKEN or CLIENT_ID in environment variables.');
 }
@@ -29,13 +32,13 @@ for (const file of commandFiles) {
 }
 
 // Register slash commands globally
-const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
+const rest = new REST({ version: '10' }).setToken(discordToken);
 
 (async () => {
   try {
     console.log('Refreshing application (/) commands...');
     console.log('Commands to register:', slashCommands.map(c => c.name).join(', '));
-    await rest.put(Routes.applicationCommands(process.env.CLIENT_ID), { body: slashCommands });
+    await rest.put(Routes.applicationCommands(clientId), { body: slashCommands });
     console.log('Slash commands registered.');
   } catch (error) {
     console.error('Failed to register commands:', error);
@@ -67,6 +70,6 @@ client.on('interactionCreate', async (interaction) => {
   }
 });
 
-client.login(process.env.DISCORD_TOKEN);
+client.login(discordToken);
 
 

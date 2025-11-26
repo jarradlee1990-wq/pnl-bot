@@ -22,7 +22,10 @@ class CardGenerator {
         
         const response = await axios.get(urlToLoad, { 
             responseType: 'arraybuffer',
-            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36' }
+            headers: { 
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                'Referer': new URL(urlToLoad).origin 
+            }
         });
         let buffer = Buffer.from(response.data);
         
@@ -108,7 +111,10 @@ class CardGenerator {
     // 1. Download GIF to buffer
     const response = await axios.get(backgroundUrl, { 
         responseType: 'arraybuffer',
-        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36' }
+        headers: { 
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Referer': new URL(backgroundUrl).origin 
+        }
     });
     const buffer = Buffer.from(response.data);
 
@@ -317,7 +323,10 @@ class CardGenerator {
                 const sharp = require('sharp');
                 const response = await axios.get(payload.avatarUrl, { 
                     responseType: 'arraybuffer',
-                    headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36' }
+                    headers: { 
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                        'Referer': new URL(payload.avatarUrl).origin 
+                    }
                 });
                 let buffer = Buffer.from(response.data);
                 buffer = await sharp(buffer).png().toBuffer();

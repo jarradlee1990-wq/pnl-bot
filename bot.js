@@ -4,6 +4,7 @@ const path = require('path');
 const { Client, GatewayIntentBits, Collection, REST, Routes } = require('discord.js');
 
 if (!process.env.DISCORD_TOKEN || !process.env.CLIENT_ID) {
+  console.log('Current Env Vars:', Object.keys(process.env));
   throw new Error('Missing DISCORD_TOKEN or CLIENT_ID in environment variables.');
 }
 

@@ -18,8 +18,13 @@ class CardGenerator {
     try {
         // Use axios to fetch buffer first (handles redirects/weird URLs better)
         const axios = require('axios');
+        const sharp = require('sharp');
+        
         const response = await axios.get(urlToLoad, { responseType: 'arraybuffer' });
-        const buffer = Buffer.from(response.data);
+        let buffer = Buffer.from(response.data);
+        
+        // Convert to PNG using Sharp to ensure Canvas compatibility (fixes WebP issues)
+        buffer = await sharp(buffer).png().toBuffer();
         
         const image = await loadImage(buffer);
         ctx.drawImage(image, 0, 0, this.width, this.height);
@@ -298,7 +303,13 @@ class CardGenerator {
         // Draw Avatar
         if (payload.avatarUrl) {
             try {
-                const avatarImage = await loadImage(payload.avatarUrl);
+                const axios = require('axios');
+                const sharp = require('sharp');
+                const response = await axios.get(payload.avatarUrl, { responseType: 'arraybuffer' });
+                let buffer = Buffer.from(response.data);
+                buffer = await sharp(buffer).png().toBuffer();
+
+                const avatarImage = await loadImage(buffer);
                 ctx.save();
                 this.roundRect(ctx, profileX, profileY - (avatarSize / 2) - 10, avatarSize, avatarSize, 40);
                 ctx.clip();

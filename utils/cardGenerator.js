@@ -16,7 +16,12 @@ class CardGenerator {
     const urlToLoad = (backgroundUrl && backgroundUrl !== 'none') ? backgroundUrl : defaultBackground;
 
     try {
-        const image = await loadImage(urlToLoad);
+        // Use axios to fetch buffer first (handles redirects/weird URLs better)
+        const axios = require('axios');
+        const response = await axios.get(urlToLoad, { responseType: 'arraybuffer' });
+        const buffer = Buffer.from(response.data);
+        
+        const image = await loadImage(buffer);
         ctx.drawImage(image, 0, 0, this.width, this.height);
         ctx.fillStyle = 'rgba(0,0,0,0.5)';
         ctx.fillRect(0, 0, this.width, this.height);

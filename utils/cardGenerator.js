@@ -338,7 +338,7 @@ class CardGenerator {
     ctx.fillText('Total Bought', labelX, startY + lineHeight);
     ctx.fillText(`$${cost.toLocaleString('en-US', {minimumFractionDigits: 2})}`, valueX, startY + lineHeight);
 
-    ctx.fillText('Total Sold', labelX, startY + (lineHeight * 2));
+    ctx.fillText('Payout', labelX, startY + (lineHeight * 2));
     ctx.fillText(`$${sells.toLocaleString('en-US', {minimumFractionDigits: 2})}`, valueX, startY + (lineHeight * 2));
 
     // 5. User Profile (Moved Up)

@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment variables
+.env
+
+# Temporary files
+temp/
+*.log
+npm-debug.log*
+
+# System files
+.DS_Store
+Thumbs.db
+
+# User Data (if you want to keep it local only, though for Render persistence you usually need a database)
+# For now, we'll keep userSettings.json in the repo so it doesn't crash on start, 
+# but normally you'd gitignore it if it was sensitive. 
+# Since it's just preferences, committing the initial empty one is fine, but we should ignore updates.
+# Actually, let's keep data/userSettings.json tracked initially so the bot starts.
+

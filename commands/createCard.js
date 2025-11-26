@@ -99,8 +99,9 @@ module.exports = {
                // But since they provided a code, we should probably fail if no exact ticker match.
                console.log(`Search found ${search.markets.length} results but no exact match for ${marketCode}. First result: ${search.markets[0].ticker}`);
                
-               // Simple heuristic: if the input looks like a ticker (contains dashes/caps), don't use fuzzy search results
-               if (marketCode.includes('-')) {
+               // Stricter check: If input has no spaces (looks like a code), require exact match
+               if (!marketCode.includes(' ')) {
+                   console.log(`Input '${marketCode}' has no spaces, rejecting fuzzy match '${search.markets[0].ticker}'`);
                    throw new Error('No exact match found for ticker');
                }
                marketName = search.markets[0].title || search.markets[0].ticker || marketName;

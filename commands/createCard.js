@@ -153,10 +153,20 @@ module.exports = {
         )} (${profitPercent >= 0 ? '+' : ''}${profitPercent.toFixed(2)}%)`,
         files: [attachment],
       });
-    } catch (error) {
-      console.error('Card generation failed:', error);
-      await interaction.editReply('Failed to generate card. Please try again later.');
-    }
+      } catch (error) {
+        console.error('Card generation failed:', error);
+        
+        let errorMsg = 'Failed to generate card. Please try again later.';
+        if (error.message && (error.message.includes('403') || error.message.includes('Forbidden'))) {
+            errorMsg = '⚠️ Your background image URL is blocked by the host. Please:\n' +
+                       '1. Upload your image to Discord (drag & drop into any channel)\n' +
+                       '2. Right-click the image → Copy Link\n' +
+                       '3. Use `/setbackground` with that Discord link\n\n' +
+                       'Or use Imgur.com for free image hosting.';
+        }
+        
+        await interaction.editReply({ content: errorMsg });
+      }
   },
 };
 

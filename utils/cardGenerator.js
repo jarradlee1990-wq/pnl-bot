@@ -16,18 +16,34 @@ class CardGenerator {
     const urlToLoad = (backgroundUrl && backgroundUrl !== 'none') ? backgroundUrl : defaultBackground;
 
     try {
-        // Use axios to fetch buffer first (handles redirects/weird URLs better)
         const axios = require('axios');
         const sharp = require('sharp');
         
-        const response = await axios.get(urlToLoad, { 
-            responseType: 'arraybuffer',
-            headers: { 
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-                'Referer': new URL(urlToLoad).origin 
-            }
-        });
-        let buffer = Buffer.from(response.data);
+        let buffer;
+        try {
+            // Try direct request first
+            const response = await axios.get(urlToLoad, { 
+                responseType: 'arraybuffer',
+                timeout: 10000,
+                headers: { 
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                    'Referer': new URL(urlToLoad).origin 
+                }
+            });
+            buffer = Buffer.from(response.data);
+        } catch (directError) {
+            // Fallback to CORS proxy if direct request fails
+            console.log('Direct request failed, trying CORS proxy...');
+            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(urlToLoad)}`;
+            const proxyResponse = await axios.get(proxyUrl, { 
+                responseType: 'arraybuffer',
+                timeout: 10000,
+                headers: { 
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                }
+            });
+            buffer = Buffer.from(proxyResponse.data);
+        }
         
         // Convert to PNG using Sharp to ensure Canvas compatibility (fixes WebP issues)
         buffer = await sharp(buffer).png().toBuffer();
@@ -109,14 +125,31 @@ class CardGenerator {
     const axios = require('axios');
 
     // 1. Download GIF to buffer
-    const response = await axios.get(backgroundUrl, { 
-        responseType: 'arraybuffer',
-        headers: { 
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-            'Referer': new URL(backgroundUrl).origin 
-        }
-    });
-    const buffer = Buffer.from(response.data);
+    let buffer;
+    try {
+        // Try direct request first
+        const response = await axios.get(backgroundUrl, { 
+            responseType: 'arraybuffer',
+            timeout: 10000,
+            headers: { 
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                'Referer': new URL(backgroundUrl).origin 
+            }
+        });
+        buffer = Buffer.from(response.data);
+    } catch (directError) {
+        // Fallback to CORS proxy if direct request fails
+        console.log('Direct GIF request failed, trying CORS proxy...');
+        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(backgroundUrl)}`;
+        const proxyResponse = await axios.get(proxyUrl, { 
+            responseType: 'arraybuffer',
+            timeout: 10000,
+            headers: { 
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+        });
+        buffer = Buffer.from(proxyResponse.data);
+    }
 
     // 2. Extract frames
     // Use 'cumulative: true' to handle transparency correctly
@@ -321,16 +354,34 @@ class CardGenerator {
             try {
                 const axios = require('axios');
                 const sharp = require('sharp');
-                const response = await axios.get(payload.avatarUrl, { 
-                    responseType: 'arraybuffer',
-                    headers: { 
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-                        'Referer': new URL(payload.avatarUrl).origin 
-                    }
-                });
-                let buffer = Buffer.from(response.data);
+                
+                let buffer;
+                try {
+                    // Try direct request first
+                    const response = await axios.get(payload.avatarUrl, { 
+                        responseType: 'arraybuffer',
+                        timeout: 10000,
+                        headers: { 
+                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                            'Referer': new URL(payload.avatarUrl).origin 
+                        }
+                    });
+                    buffer = Buffer.from(response.data);
+                } catch (directError) {
+                    // Fallback to CORS proxy if direct request fails
+                    console.log('Direct avatar request failed, trying CORS proxy...');
+                    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(payload.avatarUrl)}`;
+                    const proxyResponse = await axios.get(proxyUrl, { 
+                        responseType: 'arraybuffer',
+                        timeout: 10000,
+                        headers: { 
+                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                        }
+                    });
+                    buffer = Buffer.from(proxyResponse.data);
+                }
+                
                 buffer = await sharp(buffer).png().toBuffer();
-
                 const avatarImage = await loadImage(buffer);
                 ctx.save();
                 this.roundRect(ctx, profileX, profileY - (avatarSize / 2) - 10, avatarSize, avatarSize, 40);

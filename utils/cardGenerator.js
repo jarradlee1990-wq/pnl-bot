@@ -112,6 +112,10 @@ class CardGenerator {
     const frameData = await gifFrames({ url: buffer, frames: 'all', outputType: 'png', cumulative: true });
 
     // 3. Setup Encoder
+    if (!fs.existsSync(this.tempDir)) {
+      fs.mkdirSync(this.tempDir, { recursive: true });
+    }
+    
     const encoder = new GIFEncoder(this.width, this.height);
     const filePath = path.join(this.tempDir, `pnl-card-${Date.now()}.gif`);
     const writeStream = fs.createWriteStream(filePath);
